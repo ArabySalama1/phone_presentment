@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta charset="UTF-8"/>
+ <title>Spring Boot Thymeleaf Application - Bootstrap DataTable</title>
+
+ <link th:rel="stylesheet" th:href="@{assets/datatable/datatables.css}"/>
+ <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-dark bg-primary static-top">
+ <div class="container">
+  <a class="navbar-brand" href="/api/v1/phone-presentment/">Customers Phone Presentment</a>
+ 
+ </div>
+</nav>
+
+<div class="container">
+ <div>
+  <form th:action="@{/}" id="search-form">
+  <table>
+   <tr>
+    <td><label >State</label></td>
+    <td><select th:name="state" id = "state">
+     <option value="">all</option>
+     <option value="VALID">valid</option>
+     <option value="INVALID">invalid</option>
+    </select></td>
+   </tr>
+   <tr>
+    <td><label >Country</label></td>
+    <td><select th:name="countries" multiple="multiple" id = "countries">
+     <option value="">all</option>
+     <option value="Cameroon">Cameroon</option>
+     <option value="Ethiopia">Ethiopia</option>
+     <option value="Morocco">Morocco</option>
+     <option value="Mozambique">Mozambique</option>
+     <option value="Uganda">Uganda</option>
+    </select></td>
+   </tr>
+   <tr>
+    <td></td>
+    <td><input type="submit"  class="btn btn-primary" value="Show"></input></td>
+   </tr>
+  </table>
+  </form>
+ </div>
+ <div class="row">
+  <div class="col-lg-10 mt-5 mb-5">
+   <table id="example" class="table table-bordered table-responsive" style="width: 100%">
+    <thead class="btn-primary">
+    <tr>
+     <th>Name</th>
+     <th>Phone</th>
+     <th>Country</th>
+     <th>State</th>
+    </tr>
+    </thead>
+    <tbody id="body">
+    <tr th:each="customer : ${customersList}">
+     <td th:text="${customer?.name}">name</td>
+     <td th:text="${customer?.phone}">phone</td>
+     <td th:text="${customer?.country}">country</td>
+     <td th:text="${customer?.phoneNumberState}">phoneNumberState</td>
+    </tr>
+    </tbody>
+   </table>
+  </div>
+ </div>
+</div>
+
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+<script>
+    $(document).ready(function () {
+
+    $("#search-form").submit(function (event) {
+
+        //stop submit the form, we will post it manually.
+        event.preventDefault();
+
+        fire_ajax_submit();
+
+    });
+
+});
+
+function fire_ajax_submit() {
+
+       var state = $('#state').val().toString();
+       var countries = $('#countries').val().toString();
+
+       var params = '?state='+state+'&countries='+countries;
+
+       console.log(params);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/api/v1/phone-presentment/present'+params, true);
+
+        xhr.onload = function() {
+            if(this.status === 200) {
+                let data = JSON.parse(this.responseText);
+                console.log(data)
+                let output = '';
+                for(let i in data) {
+                    output +=
+                        `<tr>
+                            <td>${data[i].name}</td>
+                            <td>${data[i].phone}</td>
+                            <td>${data[i].country}</td>
+                            <td>${data[i].phoneNumberState}</td>
+                         </tr>`;
+                }
+                $('#body').html(output);
+            }
+        }
+        xhr.send(params);
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    username: root
+    url: jdbc:sqlite::resource:sample.db
+    password: root
+  jpa:
+    properties:
+      hibernate:
+        dialect: com.jumia.phonepresentment.config.sqllite.SQLDialect
+    database-platform: com.jumia.phonepresentment.config.sqllite.SQLDialect
+    hibernate:
+      ddl-auto: update
+  thymeleaf:
+    cache: 'false'
